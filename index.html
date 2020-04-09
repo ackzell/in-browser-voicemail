@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.js" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <title>Second attempt at recording audio stuff</title>
 </head>
@@ -12,6 +13,12 @@
 <body>
   <div id="app">
     <h1>Second attempt at recording from the browser</h1>
+
+    <select name="devices" id="my-devices" v-model="selectedDevice" @change="inputChanged">
+      <option v-for="(device, idx) in availableDevices" :key="idx" :value="device.deviceId">{{device.label}}
+      </option>
+    </select>
+
     <h2>Red means recording</h2>
     <div class="recording-witness" :class="{ 'is-recording': isRecording }">&nbsp;</div>
     <button @click="startRecording" :disabled="isRecording">Record</button>

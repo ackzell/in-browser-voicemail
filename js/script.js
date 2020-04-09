@@ -1,10 +1,11 @@
-const CONTSTRAINTS = { audio: true };
 const ENCODING_TYPE = 'mp3';
 const ENCODE_AFTER_RECORD = true;
 
 new Vue({
   el: '#app',
   data: {
+    availableDevices: [],
+    selectedDevice: null,
     logData: '',
     isRecording: false,
     audios: [],
@@ -13,13 +14,52 @@ new Vue({
     input: null,
     audioContext: null,
   },
-  created() {},
+  async created() {
+    let mediaDevices = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+    });
+
+    if (mediaDevices) {
+      let devices = await navigator.mediaDevices.enumerateDevices();
+
+      this.availableDevices = devices.filter(
+        (device) => device.kind === 'audioinput'
+      );
+    }
+  },
   methods: {
+    inputChanged() {
+      console.log('input changed');
+      if (this.getUserMediaStream) {
+      }
+      navigator.mediaDevices.getUserMedia({
+        audio: true,
+        deviceId: {
+          exact: this.selectedDevice,
+        },
+      });
+    },
     startRecording() {
       if (navigator.mediaDevices) {
+        console.warn(
+          'about to start recording using',
+          this.availableDevices.find((d) => d.deviceId == this.selectedDevice)
+        );
+
         navigator.mediaDevices
-          .getUserMedia(CONTSTRAINTS)
+          .getUserMedia({
+            audio: true,
+            deviceId: {
+              exact: this.selectedDevice,
+            },
+          })
           .then((stream) => {
+            navigator.mediaDevices.enumerateDevices().then((devices) => {
+              this.availableDevices = devices.filter(
+                (device) => device.kind === 'audioinput'
+              );
+            });
+
             this.log(
               'getUserMedia() success, stream created, initializing WebAudioRecorder...'
             );
