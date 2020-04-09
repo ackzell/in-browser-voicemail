@@ -4,121 +4,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <title>First attempt at recording audio stuff</title>
+  <title>Second attempt at recording audio stuff</title>
 </head>
 
 <body>
   <div id="app">
-    <template v-if="mediaDevicesSupported">
-      <h1>First attempt at recording from the browser</h1>
-      <h2>Red means recording</h2>
-      <div class="recording-witness" :class="{ 'is-recording': isRecording }">&nbsp;</div>
-      <button @click="startRecording" :disabled="isRecording">Record</button>
-      <button @click="stopRecording" :disabled="!isRecording">Stop</button>
+    <h1>Second attempt at recording from the browser</h1>
+    <h2>Red means recording</h2>
+    <div class="recording-witness" :class="{ 'is-recording': isRecording }">&nbsp;</div>
+    <button @click="startRecording" :disabled="isRecording">Record</button>
+    <button @click="stopRecording" :disabled="!isRecording">Stop</button>
 
-      <h2>List of audios:</h2>
-      <ul v-if="audios.length">
-        <li v-for="(audio, index) in audios" :key="index">
-          <audio :src="audio" controls></audio>
-        </li>
-      </ul>
-      <span v-else>No audios recorded yet</span>
-    </template>
-    <template v-else>
-      <h2>
-        Sorry, this browser does not support the tech we need to record.
-        Here's a unicorn for ya 🦄
-      </h2>
-    </template>
+    <h2>Log</h2>
+    <code v-html="logData"></code>
+
+    <h2>List of audios:</h2>
+    <ul v-if="audios.length">
+      <li v-for="(audio, index) in audios" :key="index">
+        <audio :src="audio" controls></audio>
+      </li>
+    </ul>
+    <span v-else>No audios recorded yet</span>
   </div>
 </body>
 
-<script src="./script.js"></script>
-<script>
-  const CONSTRAINTS = { audio: true };
-  // const AUDIO_TYPE = 'audio/ogg; codecs=opus';
-  // const AUDIO_TYPE = 'audio/mp4';
-  const AUDIO_TYPE = 'audio/webm';
+<script src="js/web-audio-recorder-js-master/lib-minified/WebAudioRecorder.min.js"></script>
 
-  new Vue({
-    el: '#app',
-    data: {
-      mediaDevicesSupported: false,
-      isRecording: false,
-      mediaRecorder: null,
-      chunks: [],
-      audios: []
-    },
-    async created() {
-      if (navigator.mediaDevices && globalThis.MediaRecorder) {
-        this.mediaDevicesSupported = true;
-
-        var types = ["video/webm",
-          "audio/webm",
-          "video/webm\;codecs=vp8",
-          "video/webm\;codecs=daala",
-          "video/webm\;codecs=h264",
-          "audio/webm\;codecs=opus",
-          "video/mpeg"];
-
-        for (var i in types) {
-          console.log("Is " + types[i] + " supported? " + (MediaRecorder.isTypeSupported(types[i]) ? "Maybe!" : "Nope :("));
-        }
-
-
-
-        const stream = await navigator.mediaDevices.getUserMedia(CONSTRAINTS);
-        this.mediaRecorder = new MediaRecorder(stream, {
-          mimeType: AUDIO_TYPE
-        });
-
-        // Called to handle the dataavailable event, which is periodically triggered
-        // each time  timeslice milliseconds of media have been recorded
-        // (or when the entire media has been recorded, if timeslice wasn't specified)
-        this.mediaRecorder.ondataavailable = (event) => {
-          if (event.data && event.data.size > 0) {
-            this.chunks.push(event.data);
-          }
-        };
-      }
-    },
-    methods: {
-      startRecording(e) {
-        e.preventDefault();
-        // wipe old data chunks
-        this.chunks = [];
-        // start recorder with 10ms buffer
-        // the media will be captured in separate chunks of that duration,
-        // rather than the default behavior of recording the media in a single large chunk
-        this.mediaRecorder.start(10);
-
-        this.isRecording = true;
-      },
-      stopRecording(e) {
-        e.preventDefault();
-        // stop the recorder
-        this.mediaRecorder.stop();
-        // say that we're not recording
-        this.isRecording = false;
-        // save the video to memory
-        this.saveMedia();
-      },
-      saveMedia() {
-        // convert saved chunks to blob
-        const blob = new Blob(this.chunks, { type: AUDIO_TYPE });
-        // generate video url from blob
-        const audioUrl = window.URL.createObjectURL(blob);
-
-        // append audioUrl to list of saved media for rendering
-        this.audios.push(audioUrl);
-
-        console.log(this.audios)
-      }
-    },
-  });
-
-</script>
+<script src="js/script.js"></script>
 
 </html>
