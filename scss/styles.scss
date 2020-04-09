@@ -3,3 +3,19 @@ body {
   color: #f5f5f5;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
+.recording-witness {
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  background-color: silver;
+  margin: 20px;
+}
+
+.is-recording {
+  background-color: tomato;
+}
+
+li {
+  list-style-type: none;
+}
