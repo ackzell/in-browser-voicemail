@@ -14,11 +14,6 @@
   <div id="app">
     <h1>Second attempt at recording from the browser</h1>
 
-    <select name="devices" id="my-devices" v-model="selectedDevice" @change="inputChanged">
-      <option v-for="(device, idx) in availableDevices" :key="idx" :value="device.deviceId">{{device.label}}
-      </option>
-    </select>
-
     <h2>Red means recording</h2>
     <div class="recording-witness" :class="{ 'is-recording': isRecording }">&nbsp;</div>
     <button @click="startRecording" :disabled="isRecording">Record</button>
